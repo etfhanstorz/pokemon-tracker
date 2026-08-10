@@ -12,6 +12,7 @@
     <nav class="site-nav">
       <a href="index.html" class="active">Prices &amp; Deals</a>
       <a href="rarity.html">By Rarity</a>
+      <a href="alerts.html">Alerts</a>
     </nav>
     <span class="last-updated" id="last-updated"></span>
   </header>
@@ -26,6 +27,7 @@
     <div class="tabs">
       <button class="active" data-tab="all">All items</button>
       <button data-tab="deals">Best deals</button>
+      <button id="pinned-only" type="button">☆ Pinned only</button>
     </div>
 
     <div class="toolbar">
@@ -54,6 +56,7 @@
   </footer>
 
   <script src="js/data-loader.js"></script>
+  <script src="js/pins.js"></script>
   <script src="js/table.js"></script>
   <script src="js/app.js"></script>
 </body>

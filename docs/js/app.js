@@ -15,7 +15,11 @@
   const tabs = document.querySelectorAll(".tabs button");
   let activeTab = "all"; // all | deals
 
+  const pinnedOnlyBtn = document.getElementById("pinned-only");
+  let pinnedOnly = false;
+
   const columns = [
+    { key: "pin", label: "", sortable: false, render: (i) => pinButton(i.id) },
     {
       key: "name",
       label: "Item",
@@ -39,6 +43,8 @@
   let table = null;
 
   function matchesFilters(item) {
+    if (pinnedOnly && !PinStore.isPinned(item.id)) return false;
+
     if (activeTab === "deals") {
       // Require a minimum price + history depth so near-worthless bulk items
       // (code cards, junk promos) with noisy/thin pricing don't dominate the
@@ -109,6 +115,12 @@
     el.addEventListener("change", refresh);
   });
 
+  pinnedOnlyBtn.addEventListener("click", () => {
+    pinnedOnly = !pinnedOnly;
+    pinnedOnlyBtn.classList.toggle("active", pinnedOnly);
+    refresh();
+  });
+
   clearBtn.addEventListener("click", () => {
     searchInput.value = "";
     setFilter.value = "all";
@@ -138,6 +150,7 @@
     getRows: currentRows,
     defaultSortKey: "market",
     defaultSortDir: "asc",
+    onPinChange: () => { updateStats(); if (pinnedOnly && table) table.refresh(); },
   });
   updateStats();
 })();

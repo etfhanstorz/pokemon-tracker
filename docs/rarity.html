@@ -12,6 +12,7 @@
     <nav class="site-nav">
       <a href="index.html">Prices &amp; Deals</a>
       <a href="rarity.html" class="active">By Rarity</a>
+      <a href="alerts.html">Alerts</a>
     </nav>
     <span class="last-updated" id="last-updated"></span>
   </header>
@@ -33,6 +34,7 @@
         <input type="number" id="max-price" placeholder="Max $" min="0" step="0.5">
       </div>
       <button id="clear-filters" type="button">Clear filters</button>
+      <button id="pinned-only" type="button">☆ Pinned only</button>
     </div>
 
     <div id="item-table-root"></div>
@@ -43,6 +45,7 @@
   </footer>
 
   <script src="js/data-loader.js"></script>
+  <script src="js/pins.js"></script>
   <script src="js/table.js"></script>
   <script src="js/rarity.js"></script>
 </body>

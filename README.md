@@ -62,3 +62,41 @@ static file server) to preview locally.
 item's own trailing 90-day average (`dealPct`), requiring at least 3
 historical data points so a single day's blip doesn't count. This is a
 simple heuristic for personal price-tracking, not financial advice.
+
+Prices flagged with ⚠️ (dealPct ≤ -50%) are unusually far below their own
+average — more often a data glitch, a mis-listed/damaged item, or a bait
+listing than a real steal. Every "Buy" link goes straight to TCGplayer's own
+product page, which handles payment and buyer protection itself; this site
+never touches your money. Still, verify the listing (condition, seller
+rating, shipping cost) before buying anything that looks too good to be true.
+
+## Pinning cards + email alerts
+
+Pinning a card (the ☆ button) only saves it in that browser's `localStorage`
+— a static site can't monitor anything on its own. To get emailed when a
+pinned card gets cheap:
+
+1. Pin cards, then go to the **Alerts** page. Optionally set a target price
+   per card (leave blank to alert on a 15%+ drop vs. its 90-day average instead).
+2. Click **Copy watchlist.json**, then **Edit watchlist.json on GitHub**,
+   paste it in, and commit. This is the one manual step — a static site has
+   no way to write back to the repo for you.
+3. One-time setup: in the repo's **Settings → Secrets and variables →
+   Actions**, add:
+   - `GMAIL_ADDRESS` — a Gmail address to send from
+   - `GMAIL_APP_PASSWORD` — a [Gmail App Password](https://myaccount.google.com/apppasswords)
+     (requires 2-Step Verification on the account; this is **not** the
+     account's normal login password)
+   - `NOTIFY_EMAIL` *(optional)* — where alerts should be sent, if different
+     from `GMAIL_ADDRESS`
+
+`.github/workflows/watchlist-check.yml` runs `scripts/check_watchlist.py`
+every 6 hours, comparing `docs/data/watchlist.json` against the latest
+`all_items.json` and emailing a summary for anything that's hit its target
+(or dropped sharply with no target set). It won't re-email for the same
+price — only on a further drop — so it's safe to leave running.
+
+Since the underlying TCGplayer data itself only updates roughly once a day,
+checking every 6 hours mostly re-confirms that day's snapshot rather than
+finding brand-new prices — but it means you'll get alerted soon after each
+day's update lands, and it's cheap to run either way.

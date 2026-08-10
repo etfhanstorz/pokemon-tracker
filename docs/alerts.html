@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pokemon Watchdog — Price Alerts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🐾 Pokemon Watchdog</h1>
+    <nav class="site-nav">
+      <a href="index.html">Prices &amp; Deals</a>
+      <a href="rarity.html">By Rarity</a>
+      <a href="alerts.html" class="active">Alerts</a>
+    </nav>
+    <span class="last-updated" id="last-updated"></span>
+  </header>
+
+  <main>
+    <div class="alerts-explainer">
+      <h2>How email alerts work</h2>
+      <p>
+        This site is static (no server), so pinning a card only saves it to
+        <em>this browser</em> — it won't email you on its own. To get emailed
+        when a pinned card gets cheap, you need to save it into
+        <code>docs/data/watchlist.json</code> in the repo once: a script runs
+        every 6 hours, checks that file against the latest prices, and emails
+        you through Gmail if something's below your target (or has dropped
+        sharply vs. its own recent average).
+      </p>
+      <ol>
+        <li>Pin cards from <a href="index.html">Prices &amp; Deals</a> or <a href="rarity.html">By Rarity</a> (the ☆ button).</li>
+        <li>Optionally set a target price below for each pin — leave it blank to just alert on a big drop (15%+ below its 90-day average).</li>
+        <li>Click <strong>Copy watchlist.json</strong>, then <strong>Edit watchlist.json on GitHub</strong>, paste it in, and commit.</li>
+        <li>
+          One-time setup (only needed the first time): in the repo's
+          <strong>Settings → Secrets and variables → Actions</strong>, add
+          <code>GMAIL_ADDRESS</code> (a Gmail address) and
+          <code>GMAIL_APP_PASSWORD</code> (a
+          <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">Gmail App Password</a>,
+          not your normal password — requires 2-Step Verification on the account),
+          and optionally <code>NOTIFY_EMAIL</code> if you want alerts sent
+          somewhere other than <code>GMAIL_ADDRESS</code>.
+        </li>
+      </ol>
+      <p class="caution">
+        ⚠️ <strong>On trust:</strong> every "Buy" link on this site goes straight to a TCGplayer product page —
+        TCGplayer is the marketplace of record and handles payment/buyer protection itself, this site never touches your money.
+        Still, a price that's <em>dramatically</em> below a card's usual range (flagged with ⚠️ in the price tables) is more often
+        a data glitch, a mis-listed/damaged item, or a bait listing than a real steal — check the listing's condition, seller
+        rating, and shipping cost before buying anything that looks too good to be true.
+      </p>
+    </div>
+
+    <div id="pinned-list"></div>
+  </main>
+
+  <footer>
+    Prices sourced from TCGplayer market data via <a href="https://tcgcsv.com" target="_blank" rel="noopener">tcgcsv.com</a>.
+  </footer>
+
+  <script src="js/data-loader.js"></script>
+  <script src="js/pins.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/alerts.js"></script>
+</body>
+</html>

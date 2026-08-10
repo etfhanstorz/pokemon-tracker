@@ -1,0 +1,41 @@
+name: Check price watchlist
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # every 6 hours
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Check watchlist and send alert email if anything's cheap
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+        run: python scripts/check_watchlist.py
+
+      - name: Commit updated alert state
+        run: |
+          git config user.name "pokemon-watchdog-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data/watchlist_state.json
+          if git diff --cached --quiet; then
+            echo "No state changes."
+          else
+            git commit -m "Update watchlist alert state"
+            git push
+          fi

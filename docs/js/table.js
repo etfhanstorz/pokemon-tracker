@@ -9,14 +9,28 @@ function buyButton(url) {
   return `<a class="buy-btn" href="${url}" target="_blank" rel="noopener">Buy →</a>`;
 }
 
+function pinButton(id) {
+  const pinned = PinStore.isPinned(id);
+  return `<button class="pin-btn ${pinned ? "pinned" : ""}" data-pin-id="${id}" title="${pinned ? "Unpin" : "Pin for price alerts"}">${pinned ? "★" : "☆"}</button>`;
+}
+
+// Deals this extreme are more likely a data glitch, a damaged/miscategorized
+// listing, or - on other marketplaces - a scam, than a genuine steal. Flag
+// them instead of just celebrating a big green number.
+const DEAL_SANITY_THRESHOLD = -50;
+
 function dealBadge(pct) {
   if (pct === null || pct === undefined) return '<span class="deal-neutral">—</span>';
   const sign = pct > 0 ? "+" : "";
   const cls = pct <= -8 ? "deal-good" : pct >= 8 ? "deal-bad" : "deal-neutral";
-  return `<span class="${cls}">${sign}${pct.toFixed(1)}%</span>`;
+  const warning =
+    pct <= DEAL_SANITY_THRESHOLD
+      ? ` <span class="sanity-flag" title="This price is unusually far below its recent average. Double-check the listing (condition, seller, shipping) before buying - extreme discounts are sometimes pricing errors or scams.">⚠️</span>`
+      : "";
+  return `<span class="${cls}">${sign}${pct.toFixed(1)}%</span>${warning}`;
 }
 
-function createItemTable(root, { columns, getRows, pageSize = 50, defaultSortKey, defaultSortDir = "asc" }) {
+function createItemTable(root, { columns, getRows, pageSize = 50, defaultSortKey, defaultSortDir = "asc", onPinChange }) {
   let sortKey = defaultSortKey;
   let sortDir = defaultSortDir;
   let page = 0;
@@ -54,6 +68,17 @@ function createItemTable(root, { columns, getRows, pageSize = 50, defaultSortKey
   root.innerHTML = "";
   root.appendChild(table);
   root.appendChild(pager);
+
+  tbody.addEventListener("click", (e) => {
+    const btn = e.target.closest(".pin-btn");
+    if (!btn) return;
+    const id = Number(btn.dataset.pinId);
+    const nowPinned = PinStore.toggle(id);
+    btn.classList.toggle("pinned", nowPinned);
+    btn.textContent = nowPinned ? "★" : "☆";
+    btn.title = nowPinned ? "Unpin" : "Pin for price alerts";
+    if (onPinChange) onPinChange();
+  });
 
   function render() {
     columns.forEach((col) => {
@@ -116,6 +141,7 @@ function createItemTable(root, { columns, getRows, pageSize = 50, defaultSortKey
   render();
   return {
     rerender: () => { page = 0; render(); },
+    refresh: () => render(),
     setSort: (key, dir) => { sortKey = key; sortDir = dir; page = 0; render(); },
   };
 }

@@ -11,7 +11,11 @@
   const statCheapest = document.getElementById("stat-cheapest");
   const lastUpdatedEl = document.getElementById("last-updated");
 
+  const pinnedOnlyBtn = document.getElementById("pinned-only");
+  let pinnedOnly = false;
+
   const columns = [
+    { key: "pin", label: "", sortable: false, render: (i) => pinButton(i.id) },
     {
       key: "name",
       label: "Card",
@@ -39,6 +43,7 @@
     const min = parseFloat(minPriceInput.value);
     const max = parseFloat(maxPriceInput.value);
     return allItems.filter((i) => {
+      if (pinnedOnly && !PinStore.isPinned(i.id)) return false;
       if (i.type !== "card") return false;
       if (rarity !== "all" && i.rarity !== rarity) return false;
       if (setFilter.value !== "all" && String(i.setId) !== setFilter.value) return false;
@@ -73,6 +78,12 @@
     el.addEventListener("change", refresh);
   });
 
+  pinnedOnlyBtn.addEventListener("click", () => {
+    pinnedOnly = !pinnedOnly;
+    pinnedOnlyBtn.classList.toggle("active", pinnedOnly);
+    refresh();
+  });
+
   clearBtn.addEventListener("click", () => {
     searchInput.value = "";
     raritySelect.value = "all";
@@ -102,6 +113,7 @@
     getRows: currentRows,
     defaultSortKey: "market",
     defaultSortDir: "asc",
+    onPinChange: () => { updateStats(); if (pinnedOnly && table) table.refresh(); },
   });
   updateStats();
 })();
