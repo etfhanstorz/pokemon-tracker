@@ -4,19 +4,6 @@ function formatMoney(v) {
   return "$" + v.toFixed(2);
 }
 
-function syncHeaderHeight() {
-  const header = document.querySelector("header.site-header");
-  if (!header) return;
-  const set = () => document.documentElement.style.setProperty("--header-height", `${header.offsetHeight}px`);
-  set();
-  if (window.ResizeObserver) {
-    new ResizeObserver(set).observe(header);
-  } else {
-    window.addEventListener("resize", set);
-  }
-}
-syncHeaderHeight();
-
 function buyButton(url) {
   if (!url) return "";
   return `<a class="buy-btn" href="${url}" target="_blank" rel="noopener">Buy →</a>`;

@@ -154,8 +154,6 @@ table.item-table th {
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-  position: sticky;
-  top: var(--header-height, 60px);
   background: var(--panel);
   white-space: nowrap;
 }
