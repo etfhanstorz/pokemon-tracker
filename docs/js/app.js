@@ -1,13 +1,19 @@
 (async function () {
   const tableRoot = document.getElementById("item-table-root");
   const searchInput = document.getElementById("search");
+  const setFilter = document.getElementById("set-filter");
+  const typeFilter = document.getElementById("type-filter");
+  const rarityFilter = document.getElementById("rarity-filter");
+  const minPriceInput = document.getElementById("min-price");
+  const maxPriceInput = document.getElementById("max-price");
+  const clearBtn = document.getElementById("clear-filters");
   const statTotal = document.getElementById("stat-total");
   const statAvg = document.getElementById("stat-avg");
   const statBestDeal = document.getElementById("stat-best-deal");
   const lastUpdatedEl = document.getElementById("last-updated");
 
   const tabs = document.querySelectorAll(".tabs button");
-  let activeTab = "all"; // all | deals | card | sealed
+  let activeTab = "all"; // all | deals
 
   const columns = [
     {
@@ -32,30 +38,39 @@
   let allItems = [];
   let table = null;
 
-  function matchesTab(item) {
-    if (activeTab === "all") return true;
+  function matchesFilters(item) {
     if (activeTab === "deals") {
       // Require a minimum price + history depth so near-worthless bulk items
       // (code cards, junk promos) with noisy/thin pricing don't dominate the
       // deals list with meaningless "-90%" swings on a few cents.
-      return (
-        item.dealPct !== null &&
-        item.dealPct <= -8 &&
-        item.historyPoints >= 3 &&
-        item.market >= 1 &&
-        item.avg90d >= 1
-      );
+      if (
+        item.dealPct === null ||
+        item.dealPct > -8 ||
+        item.historyPoints < 3 ||
+        item.market < 1 ||
+        !(item.avg90d >= 1)
+      ) {
+        return false;
+      }
     }
-    return item.type === activeTab;
+
+    if (setFilter.value !== "all" && String(item.setId) !== setFilter.value) return false;
+    if (typeFilter.value !== "all" && item.type !== typeFilter.value) return false;
+    if (rarityFilter.value !== "all" && item.rarity !== rarityFilter.value) return false;
+
+    const min = parseFloat(minPriceInput.value);
+    const max = parseFloat(maxPriceInput.value);
+    if (!isNaN(min) && (item.market === null || item.market < min)) return false;
+    if (!isNaN(max) && (item.market === null || item.market > max)) return false;
+
+    const q = (searchInput.value || "").trim().toLowerCase();
+    if (q && !(item.name.toLowerCase().includes(q) || (item.set || "").toLowerCase().includes(q))) return false;
+
+    return true;
   }
 
   function currentRows() {
-    const q = (searchInput.value || "").trim().toLowerCase();
-    return allItems.filter((i) => {
-      if (!matchesTab(i)) return false;
-      if (q && !(i.name.toLowerCase().includes(q) || (i.set || "").toLowerCase().includes(q))) return false;
-      return true;
-    });
+    return allItems.filter(matchesFilters);
   }
 
   function updateStats() {
@@ -89,11 +104,34 @@
     });
   });
 
-  searchInput.addEventListener("input", refresh);
+  [searchInput, setFilter, typeFilter, rarityFilter, minPriceInput, maxPriceInput].forEach((el) => {
+    el.addEventListener("input", refresh);
+    el.addEventListener("change", refresh);
+  });
+
+  clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    setFilter.value = "all";
+    typeFilter.value = "all";
+    rarityFilter.value = "all";
+    minPriceInput.value = "";
+    maxPriceInput.value = "";
+    refresh();
+  });
 
   const [items, sets] = await Promise.all([DataLoader.loadItems(), DataLoader.loadSets()]);
   allItems = items;
   lastUpdatedEl.textContent = sets.lastUpdated ? `Data as of ${sets.lastUpdated}` : "";
+
+  setFilter.innerHTML =
+    `<option value="all">All sets</option>` +
+    (sets.sets || []).map((s) => `<option value="${s.groupId}">${s.name}</option>`).join("");
+
+  const rarities = Array.from(
+    new Set(allItems.filter((i) => i.type === "card" && i.rarity).map((i) => i.rarity))
+  ).sort();
+  rarityFilter.innerHTML =
+    `<option value="all">All rarities</option>` + rarities.map((r) => `<option value="${r}">${r}</option>`).join("");
 
   table = createItemTable(tableRoot, {
     columns,

@@ -26,12 +26,23 @@
     <div class="tabs">
       <button class="active" data-tab="all">All items</button>
       <button data-tab="deals">Best deals</button>
-      <button data-tab="card">Cards only</button>
-      <button data-tab="sealed">Sealed only</button>
     </div>
 
     <div class="toolbar">
       <input type="text" id="search" placeholder="Search by card, box, or set name…">
+      <select id="set-filter"><option value="all">All sets</option></select>
+      <select id="type-filter">
+        <option value="all">All types</option>
+        <option value="card">Cards</option>
+        <option value="sealed">Sealed</option>
+      </select>
+      <select id="rarity-filter"><option value="all">All rarities</option></select>
+      <div class="budget-filter">
+        <input type="number" id="min-price" placeholder="Min $" min="0" step="0.5">
+        <span>–</span>
+        <input type="number" id="max-price" placeholder="Max $" min="0" step="0.5">
+      </div>
+      <button id="clear-filters" type="button">Clear filters</button>
     </div>
 
     <div id="item-table-root"></div>

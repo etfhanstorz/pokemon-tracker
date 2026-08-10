@@ -24,8 +24,15 @@
     </div>
 
     <div class="toolbar">
-      <select id="rarity-select"><option value="all">All rarities</option></select>
       <input type="text" id="search" placeholder="Search by card or set name…">
+      <select id="rarity-select"><option value="all">All rarities</option></select>
+      <select id="set-filter"><option value="all">All sets</option></select>
+      <div class="budget-filter">
+        <input type="number" id="min-price" placeholder="Min $" min="0" step="0.5">
+        <span>–</span>
+        <input type="number" id="max-price" placeholder="Max $" min="0" step="0.5">
+      </div>
+      <button id="clear-filters" type="button">Clear filters</button>
     </div>
 
     <div id="item-table-root"></div>

@@ -77,6 +77,33 @@ main { max-width: 1200px; margin: 0 auto; padding: 1.25rem 1.5rem 3rem; }
 }
 .toolbar input[type="text"] { flex: 1; min-width: 180px; }
 
+.budget-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+.budget-filter input[type="number"] {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  width: 90px;
+}
+
+#clear-filters {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+#clear-filters:hover { color: var(--text); border-color: var(--accent-2); }
+
 .tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
 .tabs button {
   background: var(--panel-2);
@@ -128,7 +155,7 @@ table.item-table th {
   cursor: pointer;
   user-select: none;
   position: sticky;
-  top: 60px;
+  top: var(--header-height, 60px);
   background: var(--panel);
   white-space: nowrap;
 }

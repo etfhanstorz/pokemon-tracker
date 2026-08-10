@@ -2,6 +2,10 @@
   const tableRoot = document.getElementById("item-table-root");
   const searchInput = document.getElementById("search");
   const raritySelect = document.getElementById("rarity-select");
+  const setFilter = document.getElementById("set-filter");
+  const minPriceInput = document.getElementById("min-price");
+  const maxPriceInput = document.getElementById("max-price");
+  const clearBtn = document.getElementById("clear-filters");
   const statTotal = document.getElementById("stat-total");
   const statAvg = document.getElementById("stat-avg");
   const statCheapest = document.getElementById("stat-cheapest");
@@ -32,9 +36,14 @@
   function currentRows() {
     const q = (searchInput.value || "").trim().toLowerCase();
     const rarity = raritySelect.value;
+    const min = parseFloat(minPriceInput.value);
+    const max = parseFloat(maxPriceInput.value);
     return allItems.filter((i) => {
       if (i.type !== "card") return false;
       if (rarity !== "all" && i.rarity !== rarity) return false;
+      if (setFilter.value !== "all" && String(i.setId) !== setFilter.value) return false;
+      if (!isNaN(min) && (i.market === null || i.market < min)) return false;
+      if (!isNaN(max) && (i.market === null || i.market > max)) return false;
       if (q && !(i.name.toLowerCase().includes(q) || (i.set || "").toLowerCase().includes(q))) return false;
       return true;
     });
@@ -59,8 +68,19 @@
     if (table) table.rerender();
   }
 
-  raritySelect.addEventListener("change", refresh);
-  searchInput.addEventListener("input", refresh);
+  [raritySelect, setFilter, searchInput, minPriceInput, maxPriceInput].forEach((el) => {
+    el.addEventListener("input", refresh);
+    el.addEventListener("change", refresh);
+  });
+
+  clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    raritySelect.value = "all";
+    setFilter.value = "all";
+    minPriceInput.value = "";
+    maxPriceInput.value = "";
+    refresh();
+  });
 
   const [items, sets] = await Promise.all([DataLoader.loadItems(), DataLoader.loadSets()]);
   allItems = items;
@@ -72,6 +92,10 @@
   raritySelect.innerHTML =
     `<option value="all">All rarities</option>` +
     rarities.map((r) => `<option value="${r}">${r}</option>`).join("");
+
+  setFilter.innerHTML =
+    `<option value="all">All sets</option>` +
+    (sets.sets || []).map((s) => `<option value="${s.groupId}">${s.name}</option>`).join("");
 
   table = createItemTable(tableRoot, {
     columns,
