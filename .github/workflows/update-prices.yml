@@ -1,0 +1,40 @@
+name: Update Pokemon prices
+
+on:
+  schedule:
+    - cron: "17 6 * * *"  # ~daily, off the hour to avoid API pile-ups
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Fetch current prices and append today's history point
+        run: python scripts/fetch_current.py
+
+      - name: Rebuild flattened item index
+        run: python scripts/build_index.py
+
+      - name: Commit and push data updates
+        run: |
+          git config user.name "pokemon-watchdog-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data
+          if git diff --cached --quiet; then
+            echo "No data changes."
+          else
+            git commit -m "Update prices $(date -u +%Y-%m-%d)"
+            git push
+          fi

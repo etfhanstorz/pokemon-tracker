@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pokemon Watchdog — By Rarity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🐾 Pokemon Watchdog</h1>
+    <nav class="site-nav">
+      <a href="index.html">Prices &amp; Deals</a>
+      <a href="rarity.html" class="active">By Rarity</a>
+    </nav>
+    <span class="last-updated" id="last-updated"></span>
+  </header>
+
+  <main>
+    <div class="stat-row">
+      <div class="stat-card"><div class="label">Cards shown</div><div class="value" id="stat-total">—</div></div>
+      <div class="stat-card"><div class="label">Average price</div><div class="value" id="stat-avg">—</div></div>
+      <div class="stat-card"><div class="label">Cheapest in view</div><div class="value" id="stat-cheapest">—</div></div>
+    </div>
+
+    <div class="toolbar">
+      <select id="rarity-select"><option value="all">All rarities</option></select>
+      <input type="text" id="search" placeholder="Search by card or set name…">
+    </div>
+
+    <div id="item-table-root"></div>
+  </main>
+
+  <footer>
+    Prices sourced from TCGplayer market data via <a href="https://tcgcsv.com" target="_blank" rel="noopener">tcgcsv.com</a>.
+  </footer>
+
+  <script src="js/data-loader.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/rarity.js"></script>
+</body>
+</html>
