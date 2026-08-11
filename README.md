@@ -1,8 +1,8 @@
 # Pokemon Watchdog
 
 A static price-tracking site for Pokemon TCG cards, packs, ETBs, and booster
-boxes: browse everything cheapest-to-highest, spot deals, and filter by
-rarity.
+boxes: browse everything cheapest-to-highest, spot deals, filter by rarity,
+pin cards for email price alerts, and find local card/game shops.
 
 ## Data source
 
@@ -100,3 +100,14 @@ Since the underlying TCGplayer data itself only updates roughly once a day,
 checking every 6 hours mostly re-confirms that day's snapshot rather than
 finding brand-new prices — but it means you'll get alerted soon after each
 day's update lands, and it's cheap to run either way.
+
+## Local shops
+
+The **Local Shops** page (`docs/shops.html` / `docs/js/shops.js`) uses your
+browser's geolocation (or a typed city/ZIP, geocoded via Nominatim) plus the
+free, keyless [Overpass API](https://overpass-api.de) to find nearby
+OpenStreetMap-tagged game/hobby/collectible shops (`shop=games`,
+`collector`, `hobby`, `anime`, `comic`, `toys`). It queries a couple of
+public Overpass mirrors with automatic fallback, since it's a shared
+service that occasionally rate-limits or times out. This is community-mapped
+data, not a verified "carries Pokemon cards" directory — call ahead.

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pokemon Watchdog — Local Card Shops</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🐾 Pokemon Watchdog</h1>
+    <nav class="site-nav">
+      <a href="index.html">Prices &amp; Deals</a>
+      <a href="rarity.html">By Rarity</a>
+      <a href="alerts.html">Alerts</a>
+      <a href="shops.html" class="active">Local Shops</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="alerts-explainer">
+      <h2>Find nearby card &amp; game shops</h2>
+      <p>
+        Uses your browser's location (or a city/zip you type in) to search
+        <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>
+        for nearby game, hobby, comic, and collectibles shops — free, no
+        account, no API key. Your location is only sent to OpenStreetMap's
+        public search servers to run the search; this site doesn't store it
+        anywhere.
+      </p>
+      <p class="caution">
+        ⚠️ This is community-mapped data, not a verified "carries Pokémon
+        cards" directory — some results may be closed, mis-tagged, or not
+        actually sell TCG product. Call ahead before making a trip.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <button id="use-location" type="button">📍 Use my location</button>
+      <span class="set-tag">or</span>
+      <input type="text" id="manual-location" placeholder="City, address, or ZIP code…">
+      <button id="search-manual" type="button">Search</button>
+      <select id="radius-select">
+        <option value="8000">5 mi</option>
+        <option value="16000" selected>10 mi</option>
+        <option value="40000">25 mi</option>
+        <option value="80000">50 mi</option>
+      </select>
+    </div>
+
+    <div id="shop-status" class="empty-state" style="display:none;"></div>
+    <div id="shop-results"></div>
+  </main>
+
+  <footer>
+    Shop data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, via the Overpass API and Nominatim.
+  </footer>
+
+  <script src="js/shops.js"></script>
+</body>
+</html>
